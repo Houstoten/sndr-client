@@ -9,12 +9,23 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^1.0.13",
+    "@chakra-ui/react": "^1.6.4",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
+    "framer-motion": "^4",
+    "graphql": "^15.5.1",
     "graphql-request": "^3.4.0",
+    "http-proxy-middleware": "^2.0.1",
     "next": "11.0.1",
+    "next-auth": "^3.27.1",
+    "next-http-proxy-middleware": "^1.0.10",
     "rambda": "^6.7.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-query": "^3.18.1"
+    "react-google-login": "^5.2.2",
+    "react-query": "^3.18.1",
+    "react-use-auth": "^2.1.0-14"
   },
   "devDependencies": {
     "@types/react": "17.0.13",
