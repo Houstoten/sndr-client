@@ -1,19 +1,23 @@
 import React, { useContext, useEffect } from "react";
-import {Image, Spinner, Button, Heading, Link} from "@chakra-ui/react"
-import {SignedOut} from "./SignedOut";
-import {SignedIn} from "./SignedIn";
-import {useColorModeValue} from "@chakra-ui/color-mode";
-import {Box, Flex, HStack} from "@chakra-ui/layout";
+import { Image, Spinner, Button, Heading, Link } from "@chakra-ui/react"
+import { SignedOut } from "./SignedOut";
+import { SignedIn } from "./SignedIn";
+import { useColorModeValue } from "@chakra-ui/color-mode";
+import { Box, Flex, HStack } from "@chakra-ui/layout";
 import { useGoogleAuth } from "../../context/AuthContext/hooks/useGoogleAuth";
 
 export const NavBar: React.FC = () => {
-    const {userDetails, loading, loadUserData} = useGoogleAuth();
-        
-    useEffect(() => {
-        loadUserData()
-    }, [])
+    const { userDetails, loading, loadUserData, refreshedTokensFirst, errorMessage, signedIn } = useGoogleAuth();
 
-    const {email, image, name} = userDetails ?? {}
+    useEffect(() => { loadUserData() }, [])
+
+    useEffect(() => {
+        if (errorMessage?.response?.status === 401) {
+            refreshedTokensFirst(loadUserData)
+        }
+    }, [errorMessage?.response?.status])
+
+    const { email, image, name } = userDetails ?? {}
 
     return (
         <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
@@ -31,13 +35,10 @@ export const NavBar: React.FC = () => {
                     {/*    ))}*/}
                     {/*</HStack>*/}
                 </HStack>
-                {loading && <Spinner/>}
-                {!userDetails && !loading && <SignedOut/>}
-                {userDetails && !loading && <SignedIn email={email} image={image} name={name}/>}
+                {loading && <Spinner />}
+                {!signedIn && !loading && <SignedOut />}
+                {signedIn && !loading && <SignedIn email={email} image={image} name={name} />}
             </Flex>
         </Box>
     );
-
-    // console.log(session)
-    // return session ? <SignedIn session={session}/> : <SignedOut/>;
 };

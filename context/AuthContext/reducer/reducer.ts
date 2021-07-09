@@ -16,6 +16,7 @@ export const AuthReducer = (initialState: any, action: any) => {
       return {
         ...initialState,
         signedIn: true,
+        errorMessage: null,
         loading: false
       };
     case "LOAD_USER_DATA":
@@ -27,14 +28,25 @@ export const AuthReducer = (initialState: any, action: any) => {
       return {
         ...initialState,
         userDetails: action.payload,
+        signedIn: true,
+        errorMessage: null,
         loading: false
       };
-    case "LOGOUT":
+
+    case "LOAD_USER_DATA_ERROR":
+      return {
+        ...initialState,
+        loading: false,
+        errorMessage: action.payload
+      };
+
+    case "LOGOUT":      
       return {
         ...initialState,
         userDetails: null,
         userId: null,
         signedIn: false,
+        loading: false
       };
 
     case "LOGIN_ERROR":
@@ -42,8 +54,17 @@ export const AuthReducer = (initialState: any, action: any) => {
         ...initialState,
         loading: false,
         signedIn: false,
-        errorMessage: action.error
+        errorMessage: action.payload
       };
+
+      case "LOGIN_ABORT":
+        return {
+          ...initialState,
+          loading: false,
+          signedIn: false,
+        };
+  
+  
 
     default:
       throw new Error(`Unhandled action type: ${action.type}`);

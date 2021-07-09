@@ -7,10 +7,61 @@ import { request, gql } from 'graphql-request'
 export const useGoogleAuth = () => {
     const { store, dispatch } = useContext(AuthContext)
 
-    const {userDetails, userId, loading, signedIn} = store;
-        
+    const { userDetails, userId, loading, signedIn, errorMessage } = store;
+
     const requestLogin = () => {
         dispatch({ type: 'REQUEST_LOGIN' })
+    }
+
+    const signOut = async () => {
+        const query = gql`
+        mutation {
+            signOut {
+              success
+            }
+          }
+        `
+        try {
+
+            const {
+                signOut: {
+                    success
+                }
+            } = await request('/api', query)
+
+            dispatch({ type: 'LOGOUT' })
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
+
+    const refreshTokens = async () => {
+        const query = gql`
+        mutation {
+            refreshTokens {
+              success
+            }
+          }
+        `
+        try {
+
+            const {
+                refreshTokens: {
+                    success
+                }
+            } = await request('/api', query)
+
+            console.log("!TOKENS REFRESHED SUCCESSFULLY!");
+        } catch (error) {
+            signOut()
+        }
+    }
+
+    const refreshedTokensFirst = async (func: Function) => {
+        await refreshTokens()
+
+        await func()
     }
 
     const loadUserData = async () => {
@@ -23,30 +74,15 @@ export const useGoogleAuth = () => {
             }
           }
         `
-        dispatch({type: "LOAD_USER_DATA"})
+        dispatch({ type: "LOAD_USER_DATA" })
 
-        const { getUserData: loadedUserData } = await request('/api', query)        
-        
-        dispatch({type: "LOAD_USER_DATA_SUCCESS", payload: loadedUserData})
-    }
+        try {
+            const { getUserData: loadedUserData } = await request('/api', query)
 
-    const refreshTokens = async () => {
-        const query = gql`
-        mutation {
-            refreshTokens {
-              success
-            }
-          }
-        `
-
-        const { 
-            refreshTokens: { 
-                success 
-            } 
-        } = await request('/api', query)
-
-        console.log("!TOKENS REFRESHED SUCCESSFULLY!");
-        
+            dispatch({ type: "LOAD_USER_DATA_SUCCESS", payload: loadedUserData })
+        } catch (error) {            
+            dispatch({ type: "LOAD_USER_DATA_ERROR", payload: error })
+        }
     }
 
     const onSuccessHandler = async ({ code }: any) => {
@@ -60,13 +96,13 @@ export const useGoogleAuth = () => {
         `
 
         const variables = { input: { code } };
-        
-        const { 
-            authGoogle: { 
-                success 
-            } 
+
+        const {
+            authGoogle: {
+                success
+            }
         } = await request('/api', query, variables)
-        
+
         success && dispatch({
             type: "LOGIN_SUCCESS",
         })
@@ -74,8 +110,8 @@ export const useGoogleAuth = () => {
         success && await loadUserData()
     }
 
-    const onFailureHandler = (data: any) => {
-        return null
+    const onFailureHandler = () => {
+        dispatch({type: 'LOGIN_ABORT'})
     }
 
     const { signIn, loaded } = useGoogleLogin({
@@ -85,10 +121,6 @@ export const useGoogleAuth = () => {
         accessType: 'offline',
         responseType: 'code'
     })
-
-    const signOut = () => {
-        dispatch({ type: 'LOGOUT' })
-    }
 
     const signInHandler = () => {
         requestLogin()
@@ -100,10 +132,11 @@ export const useGoogleAuth = () => {
         signOut,
         requestLogin,
         loadUserData,
+        refreshedTokensFirst,
         userDetails,
         userId,
         loading,
         signedIn,
-        refreshTokens
+        errorMessage
     })
 }
