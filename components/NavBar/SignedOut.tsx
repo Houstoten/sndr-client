@@ -1,11 +1,11 @@
 import React, { FC, useContext } from "react";
 import { NavLink } from "../../atoms/NavLink";
 import { Flex } from "@chakra-ui/layout";
-import { useGoogleAuth } from "../../context/AuthContext/hooks/useGoogleAuth";
+import { useSignIn } from "../../context/AuthContext/hooks/useSignIn";
 
 export const SignedOut: FC = () => {
 
-    const {signIn} = useGoogleAuth();
+    const { signIn } = useSignIn();
 
     return (<Flex alignItems={'center'}>
         {/*@ts-ignore*/}

@@ -4,7 +4,7 @@ import { Heading } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/button";
 import { Menu, MenuButton, MenuDivider, MenuGroup, MenuItem, MenuList } from "@chakra-ui/menu";
 import { Avatar } from "@chakra-ui/avatar";
-import { useGoogleAuth } from "../../context/AuthContext/hooks/useGoogleAuth";
+import { useSignOut } from "../../context/AuthContext/hooks/useSignOut";
 
 interface SignedInProps {
     email: string | null | undefined,
@@ -18,7 +18,7 @@ export const SignedIn: FC<SignedInProps> = ({
     name
 }) => {
 
-    const {signOut} = useGoogleAuth()
+    const { signOut } = useSignOut()
 
     return <Flex alignItems={'center'}>
 
