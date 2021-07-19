@@ -6,26 +6,30 @@ import { useColorModeValue } from "@chakra-ui/color-mode";
 import { Box, Flex, HStack } from "@chakra-ui/layout";
 import { useAuthState } from "../../context/AuthContext/hooks/useAuthState";
 import { useCurrentUser } from "../../context/AuthContext/hooks/useCurrentUser";
+import { useTokenRefresh } from "../../context/AuthContext/hooks/useTokenRefresh";
 
 export const NavBar: React.FC = () => {
     const { userDetails, loading, errorMessage, signedIn, refreshedTokens } = useAuthState()
-    
+
+    const { refreshTokens } = useTokenRefresh()
     //@ts-ignore
     const { loadUserData } = useCurrentUser()
 
-    useEffect(() => {loadUserData()}, [])
+    useEffect(() => { loadUserData() }, [])
 
-    useEffect(() => {        
-        
-        if (!loading && signedIn && !userDetails) {
-            if (!errorMessage || (errorMessage?.response?.status === 401 && refreshedTokens)){
-                console.log(loading, signedIn, errorMessage);
-
-                loadUserData()
-            }
+    useEffect(() => {
+        if (signedIn && !userDetails) {
+            loadUserData()
         }
-    }, [refreshedTokens, errorMessage, loading, signedIn])
+    }, [userDetails, signedIn])
 
+    useEffect(() => { refreshedTokens && loadUserData() }, [refreshedTokens])
+
+    useEffect(() => {
+        if (errorMessage?.graphQLErrors?.[0]?.extensions?.code === 'UNAUTHENTICATED') {
+            refreshTokens()
+        }
+    }, [errorMessage])
     const { email, image, name } = userDetails ?? {}
 
     return (

@@ -15,13 +15,12 @@ export const useSignOut = () => {
     const { dispatch } = useContext(AuthContext)
 
     const { logoutRequested } = useAuthState()
-    
+
     const [signOut, { loading, error, data }] = useMutation(SIGN_OUT)
 
-    
-    useEffect(() => {
-        if (!error && data?.signOut?.success && logoutRequested) {
 
+    useEffect(() => {
+        if (logoutRequested) {
             dispatch({ type: 'LOGOUT' })
         }
     }, [loading, error, data])

@@ -18,7 +18,7 @@ export const useCurrentUser = () => {
     const { store, dispatch } = useContext(AuthContext)
 
     const [loadUserData, { loading, data, error }] = useLazyQuery(GET_USER_DATA, {
-        fetchPolicy: 'network-only',
+        fetchPolicy: 'network-only'
     })
 
     useEffect(() => {

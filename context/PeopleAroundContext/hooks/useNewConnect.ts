@@ -25,7 +25,7 @@ export const useNewConnect = () => {
     const { loading, error, data } = useSubscription(USERONLINE_SUBSCRIPTION);
 
     const { updateUserOnline = {} } = data ?? {}
-
+    
     useEffect(() => {
 
         if (!loading && !error) {

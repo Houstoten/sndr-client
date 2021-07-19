@@ -8,6 +8,9 @@ const NEAREST_SUBSCRIPTION = gql`
 subscription{
     updateNearestData{
         id,
+        name,
+        image, 
+        email,
         distance
     }
   }
@@ -21,7 +24,7 @@ export const useLivePeopleAround = () => {
     const { loading, error, data } = useSubscription(NEAREST_SUBSCRIPTION);
 
     const {updateNearestData} = data ?? {}
-    
+
     useEffect(() => {
 
         if (!loading && !error) {

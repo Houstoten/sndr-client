@@ -14,21 +14,20 @@ mutation {
 export const useTokenRefresh = () => {
     const { dispatch } = useContext(AuthContext)
 
-    const [refreshTokens, { loading, error }] = useMutation(REFRESH_TOKENS)
+    const [refreshTokens, { loading, error, data }] = useMutation(REFRESH_TOKENS)
 
     const { signOut } = useSignOut()
 
     useEffect(() => {
-        dispatch({ type: 'UPDATE_LOADING', payload: { loading } })
-    }, [loading])
-
-    useEffect(() => {
         if (!loading) {
-            if (error) {
+            if (data) {
+                dispatch({ type: 'SET_REFRESH_TOKENS', payload: { refreshedTokens: true } })
+            }
+            if (error) {                
                 signOut()
             }
         }
-    }, [loading, error])
+    }, [loading, error, data])
 
     return { refreshTokens }
 }
