@@ -16,8 +16,11 @@ export const NavBar: React.FC = () => {
     useEffect(() => {loadUserData()}, [])
 
     useEffect(() => {        
-        if (!loading && signedIn) {
+        
+        if (!loading && signedIn && !userDetails) {
             if (!errorMessage || (errorMessage?.response?.status === 401 && refreshedTokens)){
+                console.log(loading, signedIn, errorMessage);
+
                 loadUserData()
             }
         }

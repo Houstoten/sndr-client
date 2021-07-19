@@ -15,19 +15,23 @@ mutation authGoogle($input: AuthArgs!){
 export const useSignIn = () => {
     const { dispatch } = useContext(AuthContext)
 
-    const [googleLogin, { loading, error, data }] = useMutation(AUTH_GOOGLE)
-
-    console.log(loading, data, error);
+    const [googleLogin, { loading, error, data }] = useMutation(AUTH_GOOGLE, {
+        onCompleted: data => {
+            if (data) {
+                dispatch({ type: "LOGIN_SUCCESS" })
+            }
+        }
+    })
 
     useEffect(() => {
 
         if (!loading) {
-            
+
             if (error) {
                 dispatch({ type: "LOGIN_ERROR", payload: error })
                 return
-            } 
-            if(data) {
+            }
+            if (data) {
                 dispatch({ type: "LOGIN_SUCCESS" })
             }
         }
