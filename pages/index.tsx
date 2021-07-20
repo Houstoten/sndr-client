@@ -6,6 +6,9 @@ import { UserCard } from '../atoms/UserCard';
 import { useAuthState } from '../context/AuthContext/hooks/useAuthState';
 import { useLivePeopleAround } from '../context/PeopleAroundContext/hooks/useLivePeopleAround';
 import { useNewConnect } from '../context/PeopleAroundContext/hooks/useNewConnect';
+import * as R from 'rambda'
+import { Heading } from '@chakra-ui/layout';
+import { useRouter } from 'next/router';
 
 export default function Home() {
 
@@ -15,7 +18,9 @@ export default function Home() {
 
   useLivePeopleAround()
   useNewConnect()
-  
+
+  const router = useRouter()
+
   useEffect(() => {
     signedIn && sendCurrentPosition()
   }, [signedIn])
@@ -26,8 +31,17 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
+      {R.isEmpty(peopleAround) && <Heading>It`s too quite here... Wait for somebody to join!</Heading>}
       {peopleAround.map(
-        ({ name, email, image, distance }: any) => <UserCard key={email} name={name} email={email} image={image} distance={distance} />)}
+        ({ id, name, email, image, distance }: any) =>
+          <UserCard
+            key={email}
+            name={name}
+            email={email}
+            image={image}
+            distance={distance}
+            onClick={() => router.push(`/user/send/${id}`)}
+          />)}
     </div>
   )
 }

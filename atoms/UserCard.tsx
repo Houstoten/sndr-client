@@ -8,8 +8,9 @@ import {
     Image,
 } from '@chakra-ui/react';
 
-export const UserCard = ({ image, name, email, distance }: any) => 
+export const UserCard = ({ image, name, email, distance, onClick }: any) => 
     <Box
+        onClick={onClick}
         role={'group'}
         p={6}
         maxW={'330px'}

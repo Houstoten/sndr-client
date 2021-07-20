@@ -6,6 +6,7 @@ import * as R from 'rambda'
 const GET_USER_DATA = gql`
 query{
     getUserData{
+      id,
       name,
       email,
       image
