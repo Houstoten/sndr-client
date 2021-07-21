@@ -8,8 +8,6 @@ export const initialState = {
 };
 
 export const AuthReducer = (initialState: any, action: any) => {
-  console.log('pinned dispatched', action);
-
   switch (action.type) {
     case "REQUEST_LOGIN":
       return {

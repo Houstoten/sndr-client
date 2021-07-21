@@ -18,6 +18,8 @@ import { WebSocketLink } from '@apollo/client/link/ws';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { isServer } from '../utils/isServer';
 import { ToastWrapper } from '../components/Toasts/ToastWrapper'
+import { SubscriptionsProvider } from '../context/SubscriptionsProvider';
+import { PersistanceProvider } from '../context/PersistanceContext/PersistanceProvider'
 
 const httpLink = createHttpLink({
   uri: '/api'
@@ -52,19 +54,22 @@ const peerOptions = {
 
 function MyApp({ Component, pageProps }: AppProps) {
   return <ApolloProvider client={client}>
-
-    <GoogleAuthProvider>
-      <PeerProvider options={peerOptions}>
-        <PeopleAroundProvider>
-          <ChakraProvider>
-            <ToastWrapper>
-              <NavBar />
-              <Component {...pageProps} />
-            </ToastWrapper>
-          </ChakraProvider>
-        </PeopleAroundProvider>
-      </PeerProvider>
-    </GoogleAuthProvider>
+    <PersistanceProvider>
+      <GoogleAuthProvider>
+        <PeerProvider options={peerOptions}>
+          <PeopleAroundProvider>
+            <SubscriptionsProvider>
+              <ChakraProvider>
+                <ToastWrapper>
+                  <NavBar />
+                  <Component {...pageProps} />
+                </ToastWrapper>
+              </ChakraProvider>
+            </SubscriptionsProvider>
+          </PeopleAroundProvider>
+        </PeerProvider>
+      </GoogleAuthProvider>
+    </PersistanceProvider>
   </ApolloProvider>
 }
 

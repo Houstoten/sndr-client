@@ -23,14 +23,14 @@ export const useLivePeopleAround = () => {
 
     const { loading, error, data } = useSubscription(NEAREST_SUBSCRIPTION);
 
-    const {updateNearestData} = data ?? {}
+    const { updateNearestData } = data ?? {}
 
     useEffect(() => {
 
         if (!loading && !error) {
             if (!R.find(R.propEq('id', updateNearestData.id), peopleAround)) {
                 dispatch({ type: 'CREATE_BY_ID', payload: updateNearestData })
-                return 
+                return
             }
 
             dispatch({ type: 'UPDATE_BY_ID', payload: updateNearestData })

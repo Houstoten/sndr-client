@@ -19,6 +19,8 @@
     "apollo-cache-inmemory": "^1.6.6",
     "apollo-client": "^2.6.10",
     "apollo-link-ws": "^1.0.20",
+    "dexie": ">=3.1.0-alpha.8",
+    "dexie-react-hooks": "^1.0.7",
     "file-saver": "^2.0.5",
     "framer-motion": "^4",
     "graphql": "^15.5.1",

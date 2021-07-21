@@ -1,68 +1,64 @@
-import React, { useEffect, useReducer, useState } from 'react'
+import React, { useEffect, useMemo, useReducer, useState } from 'react'
 
-import { DataConnection } from 'peerjs'
+import Peer, { DataConnection } from 'peerjs'
 import { PeerContext } from './PeerContext'
 import { useAuthState } from '../AuthContext/hooks/useAuthState';
 import { isServer } from '../../utils/isServer';
 import { saveAs } from 'file-saver';
-import { initialState, PeerReducer } from './reducer/reducer';
+import { FileRequest, initialState, PeerReducer } from './reducer/reducer';
 import * as R from 'rambda'
 
-//@ts-ignore
-export const PeerProvider = ({ options, children }) => {
+export const PeerProvider = ({ options, children }: any) => {
 
+    //@ts-ignore
     const [store, dispatch] = useReducer(PeerReducer, initialState);
 
-    const { connectionsWithMetadata } = store
+    const { asReceiver }: { asReceiver: (FileRequest & { pending: boolean })[] } = store
 
     const { userDetails } = useAuthState()
 
     const { id } = userDetails ?? {}
-    const [peer, initPeer] = useState<any>(null)
 
     const Peer = !isServer && require("peerjs").default
 
+    const [peer, initPeer] = useState<Peer | null>(null)
+
+    useEffect(() => {        
+        id && !isServer && Peer && initPeer(new Peer(id, options))
+    }, [id])
+
+    
     useEffect(() => {
-        if (id) {
-            const _peer = new Peer(id, options)
 
-            _peer.on('connection', (connection: DataConnection) => {
+        if (peer) {
 
-                dispatch({ type: "NEW_CONNECTION", payload: { connection } })
-                                // connection.on('open', () => {
-                //     connection.on('data', (data: any) => {
-                //         saveAs(new Blob([data]), "web.xml")
-                //     });
-                // })
+            peer.on('connection', (connection: DataConnection) => {
+
+                const { metadata } = connection
+
+                const { id } = metadata
+
+                connection.on('open', () => {
+
+                    connection.on('data', (data: any) => {
+
+                        const receiveFilePrompt = R.find(
+                            R.propEq('id', id),
+                            asReceiver
+                        )
+
+                        const { name, accepted } = receiveFilePrompt ?? {}
+
+                        if (accepted) {
+                            saveAs(new Blob([data]), name)
+                        }
+                    });
+                })
 
             });
 
-            !isServer && Peer && initPeer(_peer)
         }
-    }, [id])
-
-    useEffect(() => {
-        connectionsWithMetadata.forEach((connection: DataConnection & { accepted: boolean }) => {
-
-            const { accepted, metadata } = connection
-            const { name, id } = metadata
-
-            if (!R.isNil(accepted)) {
-                if (accepted === true) {
-                    
-                    console.log(connection);
-
-                    connection.on('open', () => {
-                        connection.on('data', (data: any) => {
-                            saveAs(new Blob([data]), name)
-                        });
-                    })
-                } else {
-                    dispatch({ type: "REMOVE_CONNECTION", payload: { id } })
-                }
-            }
-        })
-    }, [connectionsWithMetadata])
+    }, [peer, asReceiver])
 
     return (
         <PeerContext.Provider value={{ peer, store, dispatch }}>

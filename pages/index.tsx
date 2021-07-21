@@ -4,8 +4,6 @@ import React, { useEffect } from "react";
 import { usePeopleAround } from '../context/PeopleAroundContext/hooks/usePeopleAround';
 import { UserCard } from '../atoms/UserCard';
 import { useAuthState } from '../context/AuthContext/hooks/useAuthState';
-import { useLivePeopleAround } from '../context/PeopleAroundContext/hooks/useLivePeopleAround';
-import { useNewConnect } from '../context/PeopleAroundContext/hooks/useNewConnect';
 import * as R from 'rambda'
 import { Heading } from '@chakra-ui/layout';
 import { useRouter } from 'next/router';
@@ -15,9 +13,6 @@ export default function Home() {
   const { signedIn } = useAuthState()
 
   const { peopleAround, sendCurrentPosition, loadPeopleAround, currentPositionUpdatedAt } = usePeopleAround();
-
-  useLivePeopleAround()
-  useNewConnect()
 
   const router = useRouter()
 

@@ -1,38 +1,36 @@
 import { useRouter } from 'next/router'
-import React, { useCallback, useContext } from 'react'
+import React, { useCallback, useContext, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useAuthState } from '../../../context/AuthContext/hooks/useAuthState'
 import { PeerContext } from '../../../context/PeerContext/PeerContext'
 import * as R from 'rambda'
 import { DropZone } from '../../../atoms/DropZone'
+import { useFileRequest } from '../../../context/PeerContext/hooks/useFileRequest'
+import { usePersistance } from '../../../context/PersistanceContext/hooks/usePersistance'
 
 const SendToUser = () => {
     const router = useRouter()
     const { id } = router.query
     const { userDetails: { id: myid } } = useAuthState()
 
-    const { peer } = useContext(PeerContext)
+    const db = usePersistance()
+
+    const { requestFileAccept } = useFileRequest()
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
-        const connection = peer.connect(id, {
-            metadata: {
-                id: myid,
-                files: R.map(R.pick(['name', 'type', 'size']), acceptedFiles)
-            },
-            reliable: true,
-        });
+        const variables = { input: { receiverid: id, ...R.pick(['name', 'size'], acceptedFiles[0]) } };
 
-        connection.on('open', () => {
+        requestFileAccept({ variables }).then(({ data: { requestFileAccept } }: any) => {
 
-            R.forEach((file: File) => connection.send(new Blob([file], {type: file.type})), acceptedFiles)
+            const { id } = requestFileAccept
+
+            db.table("files").add({ id, file: new Blob([acceptedFiles[0]], { type: acceptedFiles[0].type }) }, [id])
         })
-
-        console.log('dropped some files!', acceptedFiles);
-    }, [peer])
+    }, [])
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
-    return <DropZone getInputProps={getInputProps} getRootProps={getRootProps}/>
+    return <DropZone getInputProps={getInputProps} getRootProps={getRootProps} />
 
     // return (
     //     <div {...getRootProps()}>
