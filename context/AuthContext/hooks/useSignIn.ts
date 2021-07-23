@@ -2,7 +2,8 @@ import { AuthContext } from "../AuthContext"
 
 import { useContext, useEffect } from 'react'
 import { useGoogleLogin } from 'react-google-login'
-import { useQuery, useMutation, gql, useLazyQuery } from '@apollo/client'
+import { useQuery, useMutation, gql, useLazyQuery, useApolloClient } from '@apollo/client'
+import { useRouter } from "next/router"
 
 const AUTH_GOOGLE = gql`
 mutation authGoogle($input: AuthArgs!){
@@ -14,11 +15,16 @@ mutation authGoogle($input: AuthArgs!){
 
 export const useSignIn = () => {
     const { dispatch } = useContext(AuthContext)
+    const client = useApolloClient();
 
+    const router = useRouter()
+    
     const [googleLogin, { loading, error, data }] = useMutation(AUTH_GOOGLE, {
         onCompleted: data => {
             if (data) {
                 dispatch({ type: "LOGIN_SUCCESS" })
+                router.reload()
+
             }
         }
     })
@@ -32,6 +38,8 @@ export const useSignIn = () => {
                 return
             }
             if (data) {
+                client.clearStore();
+
                 dispatch({ type: "LOGIN_SUCCESS" })
             }
         }

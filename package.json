@@ -44,7 +44,7 @@
     "react-query": "^3.18.1",
     "react-relay": "^11.0.2",
     "react-use-auth": "^2.1.0-14",
-    "subscriptions-transport-ws": "^0.9.19"
+    "subscriptions-transport-ws": "^0.9.19",
   },
   "devDependencies": {
     "@types/react": "17.0.13",

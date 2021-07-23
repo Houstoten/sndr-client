@@ -13,7 +13,7 @@ export const PeerProvider = ({ options, children }: any) => {
     //@ts-ignore
     const [store, dispatch] = useReducer(PeerReducer, initialState);
 
-    const { asReceiver }: { asReceiver: (FileRequest & { pending: boolean })[] } = store
+    const { asReceiver }: { asReceiver: (FileRequest & { pending: boolean, localAccepted: boolean })[] } = store
 
     const { userDetails } = useAuthState()
 
@@ -23,45 +23,40 @@ export const PeerProvider = ({ options, children }: any) => {
 
     const [peer, initPeer] = useState<Peer | null>(null)
 
-    useEffect(() => {        
+    useEffect(() => {
         id && !isServer && Peer && initPeer(new Peer(id, options))
     }, [id])
 
-    
-    useEffect(() => {
+    const setupConnectionHandler = (_asReceiver: any, peer: Peer | null) => {
+        peer && peer.on('connection', (connection: DataConnection) => {
 
-        if (peer) {
+            const { metadata } = connection
 
-            peer.on('connection', (connection: DataConnection) => {
+            const { id } = metadata
 
-                const { metadata } = connection
+            connection.on('open', () => {
 
-                const { id } = metadata
+                connection.on('data', (data: any) => {
 
-                connection.on('open', () => {
+                    const receiveFilePrompt = R.find(
+                        R.propEq('id', id),
+                        asReceiver
+                    )
 
-                    connection.on('data', (data: any) => {
+                    const { name, accepted, localAccepted } = receiveFilePrompt ?? {}
 
-                        const receiveFilePrompt = R.find(
-                            R.propEq('id', id),
-                            asReceiver
-                        )
+                    if (accepted || localAccepted) {
+                        saveAs(new Blob([data]), name)
+                        connection.close()
+                    }
+                });
+            })
 
-                        const { name, accepted } = receiveFilePrompt ?? {}
-
-                        if (accepted) {
-                            saveAs(new Blob([data]), name)
-                        }
-                    });
-                })
-
-            });
-
-        }
-    }, [peer, asReceiver])
+        });
+    }
 
     return (
-        <PeerContext.Provider value={{ peer, store, dispatch }}>
+        <PeerContext.Provider value={{ peer, setupConnectionHandler, store, dispatch }}>
             {children}
         </PeerContext.Provider>
     );

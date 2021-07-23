@@ -7,6 +7,7 @@ import { usePeerState } from "../../context/PeerContext/hooks/usePeerState"
 import { useFileRequestAnswer } from "../../context/PeerContext/hooks/useFileRequestAnswer"
 import { usePersistance } from "../../context/PersistanceContext/hooks/usePersistance"
 import { useCurrentPeer } from "../../context/PeerContext/hooks/useCurrentPeer"
+import { useSetupPeerConnection } from "../../context/PeerContext/hooks/useSetupPeerConnection"
 
 export const ToastWrapper = ({ children }: any) => {
     const toast = useToast()
@@ -15,18 +16,33 @@ export const ToastWrapper = ({ children }: any) => {
 
     const peer = useCurrentPeer()
 
+    const setupConnectionHandler = useSetupPeerConnection()
+
     const { requestFileAcceptAnswer } = useFileRequestAnswer()
 
     const { dispatch } = useContext(PeerContext)
 
     const db = usePersistance()
 
+    const variables = (id, answer) => ({ variables: { input: { id, accepted: answer } } });
+
+    useEffect(() => {
+        const { id, localAccepted } = R.find(R.compose(R.not, R.isNil, R.prop('localAccepted')))(asReceiver) ?? {}
+
+        if (id) {
+            setupConnectionHandler(asReceiver, peer)
+
+            requestFileAcceptAnswer(variables(id, localAccepted))
+            
+            dispatch({ type: 'LOCAL_APPROVE_QUERY', payload: { id, localAccepted: null } })
+        }
+
+    }, [asReceiver])
+
     useEffect(() => {
 
         R.compose(
             R.forEach(({ senderid, id, name, size }) => {
-
-                const variables = answer => ({ variables: { input: { id, accepted: answer } } });
 
                 dispatch({ type: "SET_PENDING_REQUEST", payload: { id, pending: true } })
                 toast({
@@ -35,8 +51,8 @@ export const ToastWrapper = ({ children }: any) => {
                     render: () => (
                         <Box p={3} bg="blue.500">
                             <Heading> {senderid} wants to send you {name} with size {size} bytes</Heading>
-                            <Button onClick={() => requestFileAcceptAnswer(variables(true))}>Accept</Button>
-                            <Button onClick={() => requestFileAcceptAnswer(variables(false))}>Reject</Button>
+                            <Button onClick={() => dispatch({ type: 'LOCAL_APPROVE_QUERY', payload: { id, localAccepted: true } })}>Accept</Button>
+                            <Button onClick={() => dispatch({ type: 'LOCAL_APPROVE_QUERY', payload: { id, localAccepted: false } })}>Reject</Button>
                         </Box>
                     ),
                     isClosable: true,

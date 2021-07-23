@@ -10,7 +10,7 @@ export interface FileRequest {
 }
 export interface PeerState {
     asSender: FileRequest[],
-    asReceiver: (FileRequest & { pending: boolean })[]
+    asReceiver: (FileRequest & { pending: boolean, localAccepted: boolean })[]
 }
 export const initialState: PeerState = {
     asSender: [],
@@ -38,6 +38,16 @@ export const PeerReducer = (state: PeerState, action: any) => {
                     R.when(
                         R.propEq('id', action.payload.id),
                         R.assoc('accepted', action.payload.accepted)
+                    ),
+                    state.asReceiver)
+            }
+        case "LOCAL_APPROVE_QUERY": //receiver
+            return {
+                ...state,
+                asReceiver: R.map(
+                    R.when(
+                        R.propEq('id', action.payload.id),
+                        R.assoc('localAccepted', action.payload.localAccepted)
                     ),
                     state.asReceiver)
             }

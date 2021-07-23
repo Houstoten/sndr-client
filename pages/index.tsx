@@ -7,8 +7,10 @@ import { useAuthState } from '../context/AuthContext/hooks/useAuthState';
 import * as R from 'rambda'
 import { Heading } from '@chakra-ui/layout';
 import { useRouter } from 'next/router';
+import { GridLayoutContainer } from '../containers/GridLayoutContainer';
+import { LiveUsersContainer } from '../containers/LiveUsersContainer';
 
-export default function Home() {
+function Home() {
 
   const { signedIn } = useAuthState()
 
@@ -24,19 +26,18 @@ export default function Home() {
     currentPositionUpdatedAt !== null && signedIn && loadPeopleAround()
   }, [currentPositionUpdatedAt])
 
+  const liveUsersContainer = <LiveUsersContainer peopleAround={peopleAround} />
+
+  const searchForAnyUser = <Heading>Still in dev!</Heading>
   return (
     <div className={styles.container}>
       {R.isEmpty(peopleAround) && <Heading>It`s too quite here... Wait for somebody to join!</Heading>}
-      {peopleAround.map(
-        ({ id, name, email, image, distance }: any) =>
-          <UserCard
-            key={email}
-            name={name}
-            email={email}
-            image={image}
-            distance={distance}
-            onClick={() => router.push(`/user/send/${id}`)}
-          />)}
+      <GridLayoutContainer
+        left={liveUsersContainer}
+        right={searchForAnyUser}
+      />
     </div>
   )
 }
+
+export default Home

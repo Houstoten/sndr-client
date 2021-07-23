@@ -1,4 +1,5 @@
-import { gql, useMutation } from "@apollo/client"
+import { gql, useApolloClient, useMutation } from "@apollo/client"
+import { useRouter } from "next/router"
 import { useContext, useEffect } from "react"
 import { AuthContext } from "../AuthContext"
 import { useAuthState } from "./useAuthState"
@@ -14,19 +15,27 @@ mutation {
 export const useSignOut = () => {
     const { dispatch } = useContext(AuthContext)
 
-    const { logoutRequested } = useAuthState()
+    const client = useApolloClient();
+
+    const router = useRouter()
+
+    const { logoutRequested, signedIn } = useAuthState()
 
     const [signOut, { loading, error, data }] = useMutation(SIGN_OUT)
 
-
     useEffect(() => {
-        if (logoutRequested) {
+        if (logoutRequested && data?.signOut?.success) {
+            client.clearStore();
+
             dispatch({ type: 'LOGOUT' })
+            router.reload()
         }
     }, [loading, error, data])
 
     useEffect(() => {
-        logoutRequested && signOut()
+        if (logoutRequested && signedIn) {
+            signOut()
+        }
     }, [logoutRequested])
 
     const requestSignOutHandler = () => dispatch({ type: 'REQUEST_LOGOUT' })
