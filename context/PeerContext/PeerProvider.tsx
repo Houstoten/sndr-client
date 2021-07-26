@@ -12,7 +12,8 @@ export const PeerProvider = ({ options, children }: any) => {
 
     //@ts-ignore
     const [store, dispatch] = useReducer(PeerReducer, initialState);
-
+    
+    //@ts-ignore
     const { asReceiver }: { asReceiver: (FileRequest & { pending: boolean, localAccepted: boolean })[] } = store
 
     const { userDetails } = useAuthState()
