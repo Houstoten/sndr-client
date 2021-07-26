@@ -16,15 +16,12 @@ mutation authGoogle($input: AuthArgs!){
 export const useSignIn = () => {
     const { dispatch } = useContext(AuthContext)
     const client = useApolloClient();
-
-    const router = useRouter()
     
     const [googleLogin, { loading, error, data }] = useMutation(AUTH_GOOGLE, {
         onCompleted: data => {
             if (data) {
                 dispatch({ type: "LOGIN_SUCCESS" })
-                router.reload()
-
+                window.location.replace('/')
             }
         }
     })

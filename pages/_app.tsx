@@ -1,5 +1,5 @@
 //@ts-nocheck
-'../styles/globals.css'
+import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { NavBar } from "../components/NavBar/NavBar";
 import { ChakraProvider } from "@chakra-ui/react";
@@ -12,7 +12,8 @@ import {
   InMemoryCache,
   ApolloProvider,
   createHttpLink,
-  split
+  split,
+  gql
 } from "@apollo/client";
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { getMainDefinition } from '@apollo/client/utilities';
@@ -20,6 +21,21 @@ import { isServer } from '../utils/isServer';
 import { ToastWrapper } from '../components/Toasts/ToastWrapper'
 import { SubscriptionsProvider } from '../context/SubscriptionsProvider';
 import { PersistanceProvider } from '../context/PersistanceContext/PersistanceProvider'
+import { onError } from "apollo-link-error";
+import { ApolloLink } from "apollo-link";
+import { SendToProvider } from '../context/SendToContext/SendToProvider';
+import { useRouter } from 'next/router';
+import { SignedOut } from '../components/NavBar/SignedOut';
+import { Footer } from '../components/Footer/Footer';
+import theme from '../theme/theme'
+
+const REFRESH_TOKENS = gql`
+mutation {
+    refreshTokens {
+      success
+    }
+  }
+`
 
 const httpLink = createHttpLink({
   uri: '/api'
@@ -41,8 +57,38 @@ const link = !isServer ? split(
   httpLink
 ) : httpLink;
 
-const client = new ApolloClient({
-  link,
+let client: ApolloClient
+
+const refreshTokenMutation = () => client.mutate({ mutation: REFRESH_TOKENS })
+
+const errorLink = onError(
+  ({ graphQLErrors, operation, forward }) => {
+    if (graphQLErrors) {
+      for (let err of graphQLErrors) {
+        switch (err.extensions.code) {
+          case "UNAUTHENTICATED":
+
+            if (err.path[0] === 'refreshTokens') {
+              return;
+            }
+
+            refreshTokenMutation().then(() => {
+              return forward(operation);
+            }).catch(() => {
+              if (location.pathname !== '/hello') {
+                window.location.replace('/')
+              }
+              return;
+            })
+
+        }
+      }
+    }
+  }
+);
+
+client = new ApolloClient({
+  link: ApolloLink.from([errorLink, link]),
   cache: new InMemoryCache()
 });
 
@@ -53,18 +99,24 @@ const peerOptions = {
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
+
+  const router = useRouter()
+
   return <ApolloProvider client={client}>
     <PersistanceProvider>
       <GoogleAuthProvider>
         <PeerProvider options={peerOptions}>
           <PeopleAroundProvider>
             <SubscriptionsProvider>
-              <ChakraProvider>
-                <ToastWrapper>
-                  <NavBar />
-                  <Component {...pageProps} />
-                </ToastWrapper>
-              </ChakraProvider>
+              <SendToProvider>
+                <ChakraProvider theme={theme}>
+                  <ToastWrapper>
+                    <NavBar SignedIn={router.pathname === '/hello' ? SignedOut : undefined} />
+                    <Component {...pageProps} />
+                    <Footer/>
+                  </ToastWrapper>
+                </ChakraProvider>
+              </SendToProvider>
             </SubscriptionsProvider>
           </PeopleAroundProvider>
         </PeerProvider>

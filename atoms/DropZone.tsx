@@ -13,11 +13,10 @@ import {
 export const DropZone = ({ getRootProps, getInputProps, isDragActive }: any) => {
     return (
         <Flex
-            minH={'100vh'}
+            cursor="pointer"
             align={'center'}
             justify={'center'}
-            py={12}
-            bg={useColorModeValue('gray.50', 'gray.800')}>
+            py={12}>
             <Stack
                 boxShadow={'2xl'}
                 bg={useColorModeValue('white', 'gray.700')}
@@ -31,14 +30,10 @@ export const DropZone = ({ getRootProps, getInputProps, isDragActive }: any) => 
                         textTransform={'uppercase'}
                         fontSize={'2xl'}
                         color={useColorModeValue('gray.800', 'gray.200')}>
-                        Drop here files to send
+                        Click here to select files to send
                     </Heading>
-                    <Text fontSize={'lg'} color={'gray.500'}>
-                        Or just click and select some
-                    </Text>
                     <Input
                         type={'text'}
-                        placeholder={'john@doe.net'}
                         color={useColorModeValue('gray.800', 'gray.200')}
                         bg={useColorModeValue('gray.100', 'gray.600')}
                         rounded={'full'}

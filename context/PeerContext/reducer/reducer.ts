@@ -3,10 +3,13 @@ import * as R from 'rambda'
 export interface FileRequest {
     id: string,
     senderid: string,
+    sender?: any,
+    receiver?: any,
     receiverid: string,
     name: string,
     size: number,
-    accepted: boolean
+    accepted: boolean,
+    updatedat?: Date
 }
 export interface PeerState {
     asSender: FileRequest[],

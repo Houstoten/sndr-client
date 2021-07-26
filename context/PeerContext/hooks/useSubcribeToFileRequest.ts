@@ -7,6 +7,10 @@ subscription{
     subscribeToFileRequest{
         id,
         senderid,
+        sender {
+            name,
+            image
+        }
         receiverid,
         name,
         size,
@@ -20,7 +24,7 @@ export const useSubscribeToFileRequest = () => {
     const { error, data } = useSubscription(FILE_REQUEST_SUBSCRIPTION);
 
     const { subscribeToFileRequest } = data ?? {}
-
+    
     useEffect(() => {
 
         if (data) {

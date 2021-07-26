@@ -8,7 +8,7 @@ import { useFileRequestAnswer } from "../../context/PeerContext/hooks/useFileReq
 import { usePersistance } from "../../context/PersistanceContext/hooks/usePersistance"
 import { useCurrentPeer } from "../../context/PeerContext/hooks/useCurrentPeer"
 import { useSetupPeerConnection } from "../../context/PeerContext/hooks/useSetupPeerConnection"
-
+import {RequestToast} from './Toast'
 export const ToastWrapper = ({ children }: any) => {
     const toast = useToast()
 
@@ -42,18 +42,20 @@ export const ToastWrapper = ({ children }: any) => {
     useEffect(() => {
 
         R.compose(
-            R.forEach(({ senderid, id, name, size }) => {
+            R.forEach(({ id, name, sender, size }) => {
+
+                const onAnswerHandler = (answer: boolean) => dispatch({ type: 'LOCAL_APPROVE_QUERY', payload: { id, localAccepted: answer } })
 
                 dispatch({ type: "SET_PENDING_REQUEST", payload: { id, pending: true } })
                 toast({
                     id: id,
+                    duration: null,
                     // eslint-disable-next-line react/display-name
-                    render: () => (
-                        <Box p={3} bg="blue.500">
-                            <Heading> {senderid} wants to send you {name} with size {size} bytes</Heading>
-                            <Button onClick={() => dispatch({ type: 'LOCAL_APPROVE_QUERY', payload: { id, localAccepted: true } })}>Accept</Button>
-                            <Button onClick={() => dispatch({ type: 'LOCAL_APPROVE_QUERY', payload: { id, localAccepted: false } })}>Reject</Button>
-                        </Box>
+                    render: ({onClose}) => (
+                        <RequestToast onAnswerHandler={(answer: boolean) => {
+                            onAnswerHandler(answer)
+                            onClose()
+                        }} name={name} sender={sender} size={size}/>
                     ),
                     isClosable: true,
                 })
@@ -62,6 +64,7 @@ export const ToastWrapper = ({ children }: any) => {
                 R.anyPass([
                     R.compose(toast.isActive, R.prop("id")),
                     R.propEq("accepted", true),
+                    R.propEq("accepted", false),
                     R.propEq("pending", true)
                 ]))
         )(asReceiver)

@@ -11,6 +11,11 @@ export const PeopleAroundReducer = (state: any, action: any) => {
     console.log('pinned dispatched', action);
 
     switch (action.type) {
+        case "SET_RECENT_CONTACTS": 
+            return {
+                ...state,
+                recentContacts: action.payload
+            }
         case "UPDATE_CURRENT_POSITION":
             return {
                 ...state,

@@ -13,6 +13,6 @@ export const GridLayoutContainer = (props: any) => {
         gap={4}
     >
         <GridItem colSpan={2} p="10" m="10" >{left}</GridItem>
-        <GridItem colSpan={1} p="10" m="10" bg="papayawhip">{right}</GridItem>
+        <GridItem colSpan={1} p="10" m="10" >{right}</GridItem>
     </Grid>
 }

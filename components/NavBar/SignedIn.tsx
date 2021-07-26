@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { Flex } from "@chakra-ui/layout";
-import { Heading } from "@chakra-ui/react";
+import { Text } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/button";
 import { Menu, MenuButton, MenuDivider, MenuGroup, MenuItem, MenuList } from "@chakra-ui/menu";
 import { Avatar } from "@chakra-ui/avatar";
@@ -22,22 +22,25 @@ export const SignedIn: FC<SignedInProps> = ({
 
     return <Flex alignItems={'center'}>
 
-        <Menu>
-            <Heading size={'sm'} m={2}>Hello, {name}!</Heading>
+        <Menu placement="bottom-end" autoSelect={false}>
+            <Text
+                fontFamily="Noto Sans" fontSize="14px" fontWeight="700" pr="12px" >Hello, {name}!</Text>
             <MenuButton
                 as={Button}
                 rounded={'full'}
                 variant={'link'}
-                cursor={'pointer'}>
+                cursor={'pointer'}
+                _focus={{
+                    boxShadow: "none !important"
+                }}>
                 <Avatar
-                    size={'sm'}
+                    w="38px"
+                    h="38px"
                     src={image}
                 />
             </MenuButton>
             <MenuList>
-                <MenuGroup title={'Profile'}>
-                    <MenuItem onClick={() => signOut()}>Sign out</MenuItem>
-                </MenuGroup>
+                <MenuItem fontSize="14px" onClick={() => signOut()}>Sign out</MenuItem>
             </MenuList>
         </Menu>
     </Flex>

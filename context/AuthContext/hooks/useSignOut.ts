@@ -17,8 +17,6 @@ export const useSignOut = () => {
 
     const client = useApolloClient();
 
-    const router = useRouter()
-
     const { logoutRequested, signedIn } = useAuthState()
 
     const [signOut, { loading, error, data }] = useMutation(SIGN_OUT)
@@ -28,7 +26,7 @@ export const useSignOut = () => {
             client.clearStore();
 
             dispatch({ type: 'LOGOUT' })
-            router.reload()
+            window.location.replace('/hello')
         }
     }, [loading, error, data])
 
