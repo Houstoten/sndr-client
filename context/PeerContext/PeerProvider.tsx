@@ -44,7 +44,7 @@ export const PeerProvider = ({ options, children }: any) => {
                         asReceiver
                     )
 
-                    const { name, accepted, localAccepted } = receiveFilePrompt ?? {}
+                    const { name, accepted, localAccepted } : any = receiveFilePrompt ?? {}
 
                     if (accepted || localAccepted) {
                         saveAs(new Blob([data]), name)
