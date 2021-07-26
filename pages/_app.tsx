@@ -22,7 +22,7 @@ import { ToastWrapper } from '../components/Toasts/ToastWrapper'
 import { SubscriptionsProvider } from '../context/SubscriptionsProvider';
 import { PersistanceProvider } from '../context/PersistanceContext/PersistanceProvider'
 import { onError } from "apollo-link-error";
-import { ApolloLink } from "apollo-link";
+import { ApolloLink, Observable } from "apollo-link";
 import { SendToProvider } from '../context/SendToContext/SendToProvider';
 import { useRouter } from 'next/router';
 import { SignedOut } from '../components/NavBar/SignedOut';
@@ -72,15 +72,23 @@ const errorLink = onError(
               return;
             }
 
-            refreshTokenMutation().then(() => {
-              return forward(operation);
-            }).catch(() => {
-              if (location.pathname !== '/hello') {
-                window.location.replace('/')
-              }
-              return;
-            })
+            return new Observable(observer => {
 
+              refreshTokenMutation().then(() => {
+                const subscriber = {
+                  next: observer.next.bind(observer),
+                  error: observer.error.bind(observer),
+                  complete: observer.complete.bind(observer)
+                };
+
+                return forward(operation).subscribe(subscriber)
+              }).catch(error => {
+                if (location.pathname !== '/hello') {
+                  window.location.replace('/hello')
+                }
+                return observer.error(error);;
+              })
+            })
         }
       }
     }
@@ -113,7 +121,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                   <ToastWrapper>
                     <NavBar SignedIn={router.pathname === '/hello' ? SignedOut : undefined} />
                     <Component {...pageProps} />
-                    <Footer/>
+                    <Footer />
                   </ToastWrapper>
                 </ChakraProvider>
               </SendToProvider>
