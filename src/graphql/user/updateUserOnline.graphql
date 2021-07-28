@@ -1,0 +1,10 @@
+subscription updateUserOnline{
+    updateUserOnline{
+        id,
+        name,
+        email,
+        image,
+        distance,
+        online
+    }
+  }

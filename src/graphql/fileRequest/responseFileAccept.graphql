@@ -1,0 +1,10 @@
+mutation responseFileAccept($input: FileResponseArgs!){
+    responseFileAccept(input: $input) {
+      id,
+      senderid,
+      receiverid,
+      name,
+      size,
+      accepted
+    }
+}

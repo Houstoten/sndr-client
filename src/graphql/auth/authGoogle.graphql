@@ -1,0 +1,5 @@
+mutation authGoogle($input: AuthArgs!){
+    authGoogle(input: $input) {
+      success
+    }
+}

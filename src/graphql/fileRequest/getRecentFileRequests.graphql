@@ -1,0 +1,11 @@
+query getRecentFileRequests($input: UserByIdArgs!){
+    getRecentFileRequests(input: $input){
+        id,
+        senderid,
+        receiverid,
+        name,
+        size,
+        accepted,
+        updatedat
+    }
+}

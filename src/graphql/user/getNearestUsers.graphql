@@ -1,0 +1,9 @@
+query getNearestUsers{
+    getNearestUsers{
+        name,
+        image,
+        email,
+        id,
+        distance
+    }
+}

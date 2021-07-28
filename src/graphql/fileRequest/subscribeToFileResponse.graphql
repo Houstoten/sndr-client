@@ -1,0 +1,6 @@
+subscription subscribeToFileResponse{
+    subscribeToFileResponse{
+        id,
+        accepted  
+    }
+}

@@ -1,0 +1,5 @@
+mutation setCurrentPosition($input: PositionArgs!){
+    setCurrentPosition(input: $input) {
+      latitude, longitude, updatedat
+    }
+}

@@ -1,0 +1,9 @@
+query getRecentUsersRelations{
+    getRecentUsersRelations{
+      id,
+      name,
+      email,
+      image,
+      online
+    }
+}

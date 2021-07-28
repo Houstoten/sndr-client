@@ -1,0 +1,14 @@
+subscription subscribeToFileRequest{
+    subscribeToFileRequest{
+        id,
+        senderid,
+        sender {
+            name,
+            image
+        }
+        receiverid,
+        name,
+        size,
+        accepted  
+    }
+}

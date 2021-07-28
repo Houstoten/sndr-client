@@ -1,0 +1,8 @@
+query getUserById($input: UserByIdArgs!){
+    getUserById(input: $input){
+      id,
+      name,
+      email,
+      image,
+    }
+}

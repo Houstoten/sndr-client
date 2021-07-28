@@ -1,0 +1,6 @@
+subscription updateNearestData{
+    updateNearestData{
+        id,
+        distance
+    }
+}
