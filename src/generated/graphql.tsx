@@ -124,6 +124,15 @@ export type Subscription = {
   subscribeToFileResponse: Filerequest;
 };
 
+
+export type SubscriptionUpdateNearestDataArgs = {
+  input: TrackedUsersArgs;
+};
+
+export type TrackedUsersArgs = {
+  ids: Array<Scalars['String']>;
+};
+
 export type User = {
   __typename?: 'User';
   id: Scalars['String'];
@@ -318,7 +327,9 @@ export type GetUserDataQuery = (
   ) }
 );
 
-export type UpdateNearestDataSubscriptionVariables = Exact<{ [key: string]: never; }>;
+export type UpdateNearestDataSubscriptionVariables = Exact<{
+  input: TrackedUsersArgs;
+}>;
 
 
 export type UpdateNearestDataSubscription = (
@@ -788,8 +799,8 @@ export type GetUserDataQueryHookResult = ReturnType<typeof useGetUserDataQuery>;
 export type GetUserDataLazyQueryHookResult = ReturnType<typeof useGetUserDataLazyQuery>;
 export type GetUserDataQueryResult = Apollo.QueryResult<GetUserDataQuery, GetUserDataQueryVariables>;
 export const UpdateNearestDataDocument = gql`
-    subscription updateNearestData {
-  updateNearestData {
+    subscription updateNearestData($input: TrackedUsersArgs!) {
+  updateNearestData(input: $input) {
     id
     distance
   }
@@ -808,10 +819,11 @@ export const UpdateNearestDataDocument = gql`
  * @example
  * const { data, loading, error } = useUpdateNearestDataSubscription({
  *   variables: {
+ *      input: // value for 'input'
  *   },
  * });
  */
-export function useUpdateNearestDataSubscription(baseOptions?: Apollo.SubscriptionHookOptions<UpdateNearestDataSubscription, UpdateNearestDataSubscriptionVariables>) {
+export function useUpdateNearestDataSubscription(baseOptions: Apollo.SubscriptionHookOptions<UpdateNearestDataSubscription, UpdateNearestDataSubscriptionVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useSubscription<UpdateNearestDataSubscription, UpdateNearestDataSubscriptionVariables>(UpdateNearestDataDocument, options);
       }

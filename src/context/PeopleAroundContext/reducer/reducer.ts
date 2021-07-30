@@ -29,7 +29,7 @@ export const PeopleAroundReducer = (state: any, action: any) => {
         case "LOAD_PEOPLE_SUCCESS":
             return {
                 ...state,
-                ...action.payload,
+                peopleAround: action.payload,
                 loading: false
             };
 

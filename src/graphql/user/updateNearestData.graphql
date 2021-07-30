@@ -1,5 +1,5 @@
-subscription updateNearestData{
-    updateNearestData{
+subscription updateNearestData($input: TrackedUsersArgs!){
+    updateNearestData(input: $input){
         id,
         distance
     }

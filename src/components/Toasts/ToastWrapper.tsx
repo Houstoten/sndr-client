@@ -8,7 +8,7 @@ import { useFileRequestAnswer } from "../../context/PeerContext/hooks/useFileReq
 import { usePersistance } from "../../context/PersistanceContext/hooks/usePersistance"
 import { useCurrentPeer } from "../../context/PeerContext/hooks/useCurrentPeer"
 import { useSetupPeerConnection } from "../../context/PeerContext/hooks/useSetupPeerConnection"
-import {RequestToast} from './Toast'
+import { RequestToast } from './Toast'
 export const ToastWrapper = ({ children }: any) => {
     const toast = useToast()
 
@@ -30,10 +30,10 @@ export const ToastWrapper = ({ children }: any) => {
         const { id, localAccepted } = R.find(R.compose(R.not, R.isNil, R.prop('localAccepted')))(asReceiver) ?? {}
 
         if (id) {
-            setupConnectionHandler(asReceiver, peer)
+            // setupConnectionHandler(asReceiver, peer)
 
             requestFileAcceptAnswer(variables(id, localAccepted))
-            
+
             dispatch({ type: 'LOCAL_APPROVE_QUERY', payload: { id, localAccepted: null } })
         }
 
@@ -51,11 +51,11 @@ export const ToastWrapper = ({ children }: any) => {
                     id: id,
                     duration: null,
                     // eslint-disable-next-line react/display-name
-                    render: ({onClose}) => (
+                    render: ({ onClose }) => (
                         <RequestToast onAnswerHandler={(answer: boolean) => {
                             onAnswerHandler(answer)
                             onClose()
-                        }} name={name} sender={sender} size={size}/>
+                        }} name={name} sender={sender} size={size} />
                     ),
                     isClosable: true,
                 })
@@ -74,30 +74,32 @@ export const ToastWrapper = ({ children }: any) => {
     useEffect(() => {
 
         const asyncFunc = async () => {
-            R.compose(
-                R.forEach(({ receiverid, id }) => {
-
-                    const connection = peer.connect(receiverid, {
-                        metadata: {
-                            id,
-                        },
-                        reliable: true,
-                    });
-
-                    connection.on('open', async () => {
-
-                        const { file } = await db.table("files").get({ id })
-
-                        connection.send(file)
-
-                        dispatch({ type: "REMOVE_SENDER_REQUEST", payload: { id } })
-
-                        db.table("files").delete(id)
-                    })
-
-                }),
+            const toSend = R.compose(
+                R.head,
                 R.filter(R.propEq("accepted", true))
             )(asSender)
+
+            if (!toSend) return
+
+            const { receiverid, id } = toSend
+
+            const connection = await peer.connect(receiverid, {
+                metadata: {
+                    id,
+                },
+                reliable: true,
+            });
+
+            connection.on('open', async () => {
+
+                const { file } = await db.table("files").get({ id })
+
+                connection.send(file)
+
+                dispatch({ type: "REMOVE_SENDER_REQUEST", payload: { id } })
+
+                db.table("files").delete(id)
+            })
 
         }
 

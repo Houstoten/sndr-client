@@ -1,5 +1,6 @@
 //@ts-nocheck
 import '../styles/globals.css'
+import 'webrtc-adapter'
 import type { AppProps } from 'next/app'
 import { NavBar } from "../components/NavBar/NavBar";
 import { ChakraProvider } from "@chakra-ui/react";
@@ -101,9 +102,9 @@ client = new ApolloClient({
 });
 
 const peerOptions = {
-  host: 'peer-server-sndr.herokuapp.com',
-  port: 443,
-  secure: true
+  host: 'localhost',
+  port: 9000,
+  path: '/myapp'
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
