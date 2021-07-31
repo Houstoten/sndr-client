@@ -30,10 +30,6 @@ export const PeerProvider = ({ options, children }: any) => {
         asReceiverRef.current = asReceiver
     }, [asReceiver])
 
-    useEffect(() => {
-        id && !isServer && Peer && initPeer(new Peer(id, options))
-    }, [id])
-
     const setupConnectionHandler = (peer: Peer | null) => {
         peer && peer.on('connection', (connection: DataConnection) => {
 
@@ -65,8 +61,14 @@ export const PeerProvider = ({ options, children }: any) => {
     }
 
     useEffect(() => {
-        peer && setupConnectionHandler(peer)
-    }, [peer])
+        let _peer;
+        _peer = id && !isServer && Peer && new Peer(id, options)
+        if(_peer) {            
+            setupConnectionHandler(_peer)
+
+            initPeer(_peer)
+        }
+    }, [id, isServer, Peer])
 
     return (
         <PeerContext.Provider value={{ peer, store, dispatch }}>
