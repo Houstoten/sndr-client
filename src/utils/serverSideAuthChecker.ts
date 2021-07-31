@@ -36,8 +36,10 @@ export const getServerSideAuth = (fallbackURL: string, fallbackIfNoUser: boolean
                 permanent: false,
             },
         }
-    } catch {
+    } catch(e) {
 
+        console.log(e);
+        
         return {
             props: {},
             redirect: fallbackIfNoUser && {
