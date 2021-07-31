@@ -17,11 +17,16 @@ export const getServerSideAuth = (fallbackURL: string, fallbackIfNoUser: boolean
     })
 
     try {
+
+        console.log('requesting userdata');
+        
         //@ts-ignore
         const userData = await client.query<GetUserDataQuery>({
             query: GetUserDataDocument,
         })
 
+        console.log(userData);
+        
         const newProps = { userData: userData?.data?.getUserData }
 
         return {
