@@ -11,9 +11,12 @@ import { useRecentSentFiles } from '../../../context/SendToContext/hooks/useRece
 import { useUserSendTo } from '../../../context/SendToContext/hooks/useUserSendTo'
 import { Avatar, Box, Flex, Heading, Text } from '@chakra-ui/react'
 import { FileRequest } from '../../../context/PeerContext/reducer/reducer'
+import { getServerSideAuth } from '../../../utils/serverSideAuthChecker'
 const byteSize = require('byte-size')
 
 const prepareId: (id: string | string[]) => string = (id) => Array.isArray(id) ? id[0] : id
+
+export const getServerSideProps = getServerSideAuth('/hello', true)
 
 const SendToUser = () => {
     const router = useRouter()

@@ -6,8 +6,11 @@ import { useRouter } from 'next/router';
 import { Flex, Text } from '@chakra-ui/react';
 import { useSendGeolocation } from '../context/PeopleAroundContext/hooks/useSendGeolocation';
 import { useNearestUsers } from '../context/PeopleAroundContext/hooks/useNearestUsers';
+import { getServerSideAuth } from '../utils/serverSideAuthChecker';
 
 const colorArr = ["#71bfbc", "#ffa951", "#47afd6", "#a24ee9"]
+
+export const getServerSideProps = getServerSideAuth('/hello', true)
 
 function Home() {
 

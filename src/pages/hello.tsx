@@ -1,21 +1,16 @@
 import { Flex, Box, Text, Button } from "@chakra-ui/react";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useAuthState } from "../context/AuthContext/hooks/useAuthState";
 import Image from 'next/image'
 import { useSignIn } from "../context/AuthContext/hooks/useSignIn";
+import { getServerSideAuth } from "../utils/serverSideAuthChecker";
+
+export const getServerSideProps = getServerSideAuth('/', false)
 
 export default function Hello() {
 
     const { signIn } = useSignIn();
 
-    const { signedIn } = useAuthState()
-
     const [hovered, setHovered] = useState(false);
-
-    useEffect(() => {
-        signedIn && window.location.replace('/')
-    }, [signedIn])
 
     return <Flex mt="60px" justifyContent="center">
         <Flex w="1280px" ml="140px">

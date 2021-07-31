@@ -87,7 +87,7 @@ const errorLink = onError(
                 if (location.pathname !== '/hello') {
                   window.location.replace('/hello')
                 }
-                return observer.error(error);;
+                return observer.error(error);
               })
             })
         }

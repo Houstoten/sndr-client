@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import React, { useEffect, useReducer, useRef, useState } from 'react'
 
 import Peer, { DataConnection } from 'peerjs'
 import { PeerContext } from './PeerContext'
