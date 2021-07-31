@@ -50,7 +50,7 @@ export const errorLink = (refreshMutation: any) => onError(
 
                                 return forward(operation).subscribe(subscriber)
                             }).catch(error => {
-                                if (location.pathname !== '/hello') {
+                                if (!isServer && window.location.pathname !== '/hello') {
                                     window.location.replace('/hello')
                                 }
                                 return observer.error(error);
