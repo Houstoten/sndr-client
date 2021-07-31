@@ -1,16 +1,23 @@
-import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client"
+import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from "@apollo/client"
 import { GetServerSidePropsContext } from "next"
-import { GetUserDataDocument, GetUserDataQuery } from "../generated/graphql"
+import { GetUserDataDocument, GetUserDataQuery, RefreshTokensDocument } from "../generated/graphql"
+import { errorLink } from "./apolloLinks";
 
 export const getServerSideAuth = (fallbackURL: string, fallbackIfNoUser: boolean) => async (
     context: GetServerSidePropsContext
 ) => {
-    const client = new ApolloClient({
-        link: new HttpLink({ uri: 'http://localhost:4000/graphql', headers: context?.req?.headers }),
+    let client;
+
+    const refreshTokenMutation = () => client.mutate({ mutation: RefreshTokensDocument })
+
+    client = new ApolloClient({
+        //@ts-ignore
+        link: ApolloLink.from([errorLink(refreshTokenMutation), new HttpLink({ uri: 'http://localhost:4000/graphql', headers: context?.req?.headers })]),
         cache: new InMemoryCache()
     })
 
     try {
+        //@ts-ignore
         const userData = await client.query<GetUserDataQuery>({
             query: GetUserDataDocument,
         })
