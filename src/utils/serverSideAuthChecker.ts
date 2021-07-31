@@ -1,4 +1,4 @@
-import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from "@apollo/client"
+import { ApolloClient, ApolloLink, createHttpLink, InMemoryCache } from "@apollo/client"
 import { GetServerSidePropsContext } from "next"
 import { GetUserDataDocument, GetUserDataQuery, RefreshTokensDocument } from "../generated/graphql"
 import { errorLink } from "./apolloLinks";
@@ -12,7 +12,7 @@ export const getServerSideAuth = (fallbackURL: string, fallbackIfNoUser: boolean
 
     client = new ApolloClient({
         //@ts-ignore
-        link: ApolloLink.from([errorLink(refreshTokenMutation), new HttpLink({ uri: 'https://api.sndr.club/graphql', headers: context?.req?.headers })]),
+        link: ApolloLink.from([errorLink(refreshTokenMutation), createHttpLink({ uri: 'https://api.sndr.club/graphql', headers: context?.req?.headers })]),
         cache: new InMemoryCache()
     })
 
