@@ -10,6 +10,8 @@ export const getServerSideAuth = (fallbackURL: string, fallbackIfNoUser: boolean
 
     const refreshTokenMutation = () => client.mutate({ mutation: RefreshTokensDocument })
 
+    console.log(context?.req?.headers);
+    
     client = new ApolloClient({
         //@ts-ignore
         link: ApolloLink.from([errorLink(refreshTokenMutation), createHttpLink({ uri: 'https://api.sndr.club/graphql', headers: context?.req?.headers })]),
