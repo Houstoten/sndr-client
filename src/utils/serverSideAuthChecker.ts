@@ -14,7 +14,7 @@ export const getServerSideAuth = (fallbackURL: string, fallbackIfNoUser: boolean
     
     client = new ApolloClient({
         //@ts-ignore
-        link: createHttpLink({ uri: 'https://api.sndr.club/graphql', headers: { Cookie: context?.req?.headers?.['Cookie'] }}),
+        link: createHttpLink({ uri: 'https://api.sndr.club/graphql', headers: { Cookie: context?.req?.headers?.['cookie'] }}),
         cache: new InMemoryCache()
     })
 
