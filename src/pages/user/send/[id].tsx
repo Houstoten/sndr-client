@@ -42,7 +42,7 @@ const SendToUser = () => {
     const { requestFileAccept } = useFileRequest()
 
     const onDrop = (acceptedFiles: File[]) => {
-        setFiles([...files, ...acceptedFiles])
+        setFiles(files => [...files, ...acceptedFiles])
     }
 
     const createZipOrSingleFile = async (files: File[]) => {
