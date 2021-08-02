@@ -49,7 +49,7 @@ export const useSignIn = () => {
     }
 
     const { signIn, loaded } = useGoogleLogin({
-        clientId: '629755736096-4nfiv64cnmk3jiuf85uvbj6fbhc79r2h.apps.googleusercontent.com',
+        clientId: '468081019600-vi6jg7dm5j9g7ngfeou0347qlpi0r693.apps.googleusercontent.com',
         onSuccess: onSuccessHandler,
         onFailure: onFailureHandler,
         accessType: 'offline',
