@@ -69,7 +69,7 @@ function Home() {
             <Flex direction="column"
               mt="25px"
               style={{ gap: "15px" }}
-              height="458px"
+              maxHeight="458px"
               width="fit-content"
               overflowY="auto"
               p="7px"
@@ -102,6 +102,7 @@ function Home() {
           <Flex direction='column' justify="center" alignSelf="flex-start">
             <Text textAlign="center" fontWeight="700" fontSize="22px" color="#041820">Search by email or name</Text>
             <Box w="445px"
+              maxHeight="458px"
               m="auto"
               mt="34px"
               border="1px solid transparent"
