@@ -9,8 +9,6 @@ export const getServerSideAuth = (fallbackURL: string, fallbackIfNoUser: boolean
     let client;
 
     const refreshTokenMutation = () => client.mutate({ mutation: RefreshTokensDocument })
-
-    console.log(context?.req?.headers);
     
     client = new ApolloClient({
         //@ts-ignore
@@ -19,15 +17,11 @@ export const getServerSideAuth = (fallbackURL: string, fallbackIfNoUser: boolean
     })
 
     try {
-
-        console.log('requesting userdata');
         
         //@ts-ignore
         const userData = await client.query<GetUserDataQuery>({
             query: GetUserDataDocument,
         })
-
-        console.log(userData);
         
         const newProps = { userData: userData?.data?.getUserData }
 
@@ -39,8 +33,6 @@ export const getServerSideAuth = (fallbackURL: string, fallbackIfNoUser: boolean
             },
         }
     } catch(e) {
-
-        console.log(e);
         
         return {
             props: {},

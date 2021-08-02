@@ -12,11 +12,12 @@ import {
     Flex,
 } from '@chakra-ui/react';
 import React from 'react';
+import * as R from 'rambda'
 
 export const UserCard = ({ image, name, email, distance, onClick, online, badgeColor = "#71bfbc" }: any) => {
     return (
         <Flex
-            w='500px'
+            w='540px'
             minH="100px"
             maxH="100px"
             background="white"
@@ -50,7 +51,7 @@ export const UserCard = ({ image, name, email, distance, onClick, online, badgeC
                     {email}
                 </Text>
 
-                {distance && <Badge
+                {!R.isNil(distance) && <Badge
                     h="20px"
                     w="fit-content"
                     p="0 10px"

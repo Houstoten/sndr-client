@@ -1,18 +1,16 @@
 import { useRouter } from 'next/router'
-import React, { useCallback, useContext, useEffect } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { useAuthState } from '../../../context/AuthContext/hooks/useAuthState'
-import { PeerContext } from '../../../context/PeerContext/PeerContext'
 import * as R from 'rambda'
 import { DropZone } from '../../../atoms/DropZone'
 import { useFileRequest } from '../../../context/PeerContext/hooks/useFileRequest'
 import { usePersistance } from '../../../context/PersistanceContext/hooks/usePersistance'
-import { useRecentSentFiles } from '../../../context/SendToContext/hooks/useRecentSentFiles'
 import { useUserSendTo } from '../../../context/SendToContext/hooks/useUserSendTo'
-import { Avatar, Box, Flex, Heading, Text } from '@chakra-ui/react'
-import { FileRequest } from '../../../context/PeerContext/reducer/reducer'
+import { Avatar, Box, Button, Flex, Heading, IconButton, Text } from '@chakra-ui/react'
 import { getServerSideAuth } from '../../../utils/serverSideAuthChecker'
 const byteSize = require('byte-size')
+import { CloseIcon } from 'chakra-ui-ionicons';
+import JSZip from 'jszip'
 
 const prepareId: (id: string | string[]) => string = (id) => Array.isArray(id) ? id[0] : id
 
@@ -21,10 +19,13 @@ export const getServerSideProps = getServerSideAuth('/hello', true)
 const SendToUser = () => {
     const router = useRouter()
 
+    const [files, setFiles] = useState<File[]>([])
+
+    const [hovered, setHovered] = useState(false);
+
     const { sendToUser, loadUserById } = useUserSendTo()
 
     const { name, email, image } = sendToUser ?? {}
-    const { recentFiles, loadRecentFiles } = useRecentSentFiles()
 
     const { id } = router.query
 
@@ -33,7 +34,6 @@ const SendToUser = () => {
     useEffect(() => {
         if (!R.isEmpty(id)) {
             loadUserById({ variables: { input: { id: preparedId } } })
-            loadRecentFiles({ variables: { input: { id: preparedId } } })
         }
     }, [preparedId])
 
@@ -42,67 +42,139 @@ const SendToUser = () => {
     const { requestFileAccept } = useFileRequest()
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
-        const variables = { input: { receiverid: preparedId, ...R.pick(['name', 'size'], acceptedFiles[0]) } };
+        setFiles(acceptedFiles)
+    }, [id])
+
+    const createZipOrSingleFile = async (files: File[]) => {
+
+        if (files.length === 1) {
+            return files[0]
+        }
+
+        const zip = new JSZip()
+
+        files.forEach(file => zip.file(file.name, file))
+
+        const resultBlob = await zip.generateAsync({ type: 'blob' })
+
+        //@ts-ignore
+        resultBlob.lastModifiedDate = new Date()
+        //@ts-ignore
+        resultBlob.name = `${email}.zip`
+
+        return resultBlob as File
+    }
+
+    const fileSendHandler = async () => {
+        if (files.length === 0) {
+            return
+        }
+        const preparedFile = await createZipOrSingleFile(files)
+
+        const variables = { input: { receiverid: preparedId, ...R.pick(['name', 'size'], preparedFile) } };
 
         requestFileAccept({ variables }).then(({ data: { requestFileAccept } }: any) => {
 
             const { id } = requestFileAccept
 
-            db.table("files").add({ id, file: new Blob([acceptedFiles[0]], { type: acceptedFiles[0].type }) }, [id])
+            return db.table("files").add({ id, file: new Blob([preparedFile], { type: preparedFile.type }) }, [id])
+        }).then(() => {
+            setFiles([])
         })
-    }, [id])
-
+    }
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
-    return <Flex direction="row" mt="50px" align="center" justify="space-around">
-        <Flex direction="column" justify="space-between">
-            <Flex direction="row" align="center">
+    return <Flex justify="center" mt="35px" mb="100px">
+        <Flex alignItems="center" w="1140px" justify="center" direction="column">
+            <Text fontWeight="700" fontSize="26px" color="#041820">Send files to user</Text>
+            <Flex direction="row" mt="60px" align="center" justify="space-between" w="100%">
+                <Flex direction="row" align="center" mt="55px" alignSelf="start">
 
-                <Avatar
-                    size={'xl'}
-                    src={image}
-                    mb={4}
-                    mr={10}
-                    pos={'relative'}
-                />
-                <Box textAlign="start">
-                    <Heading fontSize={'2xl'} fontFamily={'body'}>
-                        {name}
-                    </Heading>
-                    <Text fontWeight={600} color={'gray.500'} mb={4}>
-                        {email}
-                    </Text>
-                </Box>
-            </Flex>
+                    <Avatar
+                        w="90px"
+                        h="90px"
+                        src={image}
+                        pos={'relative'}
+                    />
+                    <Box textAlign="start" ml="25px">
+                        <Text color="#041820" fontSize="20px" fontWeight="700">{name}</Text>
+                        <Text color="#4c4c4c" fontSize="16px">{email}</Text>
+                    </Box>
+                </Flex>
 
-            <Flex h="300px"
-                style={{ gap: "15px" }}
-                w="500px"
-                overflowY="auto"
-                p="7px"
-                direction="column"
-                className="customScrollbar"
-            >
-                {/*/@ts-ignore*/}
-                {recentFiles.filter(R.compose(R.not, R.isNil, R.prop('accepted'))).map((fileRequest: FileRequest) => {
-                    const { id: fileRequestid, senderid, name, size, updatedat } = fileRequest
+                <Flex direction="column">
+                    <DropZone getInputProps={getInputProps} getRootProps={getRootProps} isDragActive={isDragActive} />
 
-                    return <Flex key={fileRequestid} h="100px" background="white"
-                        boxShadow="0 0 7px rgba(99, 178, 209, 0.25)"
-                        borderRadius="10px"
-                        textAlign={'center'}
-                        alignItems="center"
-                        transition="all .3s ease"
-                        p="5px">
-                        <Text fontSize="14px">You {senderid === id ? "received" : "sent"} <b>{name}</b> | {byteSize(size).toString()} at {updatedat} </Text>
+                    <Flex style={{ gap: "8px" }} mt={files.length && "20px"} mb={!files.length ? "30px" : "25px"} direction="column">
+                        {files.map(file => <Flex key={file.name + file.size}
+                            h="30px"
+                            borderRadius="5px"
+                            background="#f7f7f7"
+                            pl="10px"
+                            pr="10px"
+                            alignItems="center">
+                            <Text fontSize="12px" fontWeight="700" color="#272727">{file.name}</Text>
+                            <Text h="100%" display="inline-flex" alignItems="center" ml="15px" fontSize="10px" fontWeight="700" color="#828282">({byteSize(file.size).toString()})</Text>
+
+                            <IconButton
+                                ml="auto"
+                                height="100%"
+                                minWidth="16px"
+                                variant="unstyled"
+                                aria-label="Delete"
+                                color="#272727"
+                                _focus={{
+                                    boxShadow: "none !important",
+                                }}
+                                onClick={() => setFiles(R.reject(_file => file.name === _file.name && file.size === _file.size))}
+                                icon={<CloseIcon h={5} />} />
+                        </Flex>)}
                     </Flex>
-                })}
+                    <Button ml="auto"
+                        mr="auto"
+                        h="52px"
+                        w="300px"
+                        cursor={!files.length && "not-allowed"}
+                        onClick={fileSendHandler}
+                        borderRadius="10px"
+                        background="#fff"
+                        _before={{
+                            content: '""',
+                            position: "absolute",
+                            top: "-3px",
+                            bottom: "-3px",
+                            left: "-3px",
+                            right: "-3px",
+                            borderRadius: "13px",
+                            background: `linear-gradient(rgba(33,99,131,${files.length ? 1 : 0.4}) 0%, rgba(54,124,157,${files.length ? 1 : 0.4}) 50%, rgba(113,191,188,${files.length ? 1 : 0.4}) 100%)`,
+                            zIndex: -1
+                        }}
+                        _hover={{
+                            background: files.length ? "transparent" : 'white'
+                        }}
+                        _focus={{
+                            boxShadow: "none !important"
+                        }}
+                        _active={{
+                            background: files.length ? "transparent !important" : 'white'
+                        }}
+                        onMouseEnter={() => setHovered(true)}
+                        onMouseLeave={() => setHovered(false)}
+                    >
+                        <Text fontWeight="700"
+                            fontSize="19px"
+                            style={{
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: files.length && hovered ? "white" : "transparent"
+                            }}
+                            background={`linear-gradient(rgba(33,99,131,${files.length ? 1 : 0.4}) 0%, rgba(54,124,157,${files.length ? 1 : 0.4}) 50%, rgba(113,191,188,${files.length ? 1 : 0.4}) 100%)`}
+                        >Send files</Text>
+                    </Button>
+
+                </Flex>
             </Flex>
         </Flex>
-
-        <DropZone getInputProps={getInputProps} getRootProps={getRootProps} />
     </Flex>
-
 }
 
 export default SendToUser

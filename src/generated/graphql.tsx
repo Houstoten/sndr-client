@@ -90,6 +90,10 @@ export type MutationSetCurrentPositionArgs = {
   input: PositionArgs;
 };
 
+export type NameEmailSearchArgs = {
+  search: Scalars['String'];
+};
+
 export type PositionArgs = {
   latitude: Scalars['Float'];
   longitude: Scalars['Float'];
@@ -100,6 +104,7 @@ export type Query = {
   hello: Scalars['String'];
   getUserData: User;
   getUserById: User;
+  findUserByNameOrEmail: Array<User>;
   getRecentUsersRelations: Array<User>;
   getNearestUsers: Array<UserResponse>;
   getPendingFileRequests: Array<Filerequest>;
@@ -109,6 +114,11 @@ export type Query = {
 
 export type QueryGetUserByIdArgs = {
   input: UserByIdArgs;
+};
+
+
+export type QueryFindUserByNameOrEmailArgs = {
+  input: NameEmailSearchArgs;
 };
 
 
@@ -279,6 +289,19 @@ export type SubscribeToFileResponseSubscription = (
     { __typename?: 'Filerequest' }
     & Pick<Filerequest, 'id' | 'accepted'>
   ) }
+);
+
+export type FindUserByNameOrEmailQueryVariables = Exact<{
+  input: NameEmailSearchArgs;
+}>;
+
+
+export type FindUserByNameOrEmailQuery = (
+  { __typename?: 'Query' }
+  & { findUserByNameOrEmail: Array<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'name' | 'email' | 'image' | 'online'>
+  )> }
 );
 
 export type GetNearestUsersQueryVariables = Exact<{ [key: string]: never; }>;
@@ -647,6 +670,45 @@ export function useSubscribeToFileResponseSubscription(baseOptions?: Apollo.Subs
       }
 export type SubscribeToFileResponseSubscriptionHookResult = ReturnType<typeof useSubscribeToFileResponseSubscription>;
 export type SubscribeToFileResponseSubscriptionResult = Apollo.SubscriptionResult<SubscribeToFileResponseSubscription>;
+export const FindUserByNameOrEmailDocument = gql`
+    query findUserByNameOrEmail($input: NameEmailSearchArgs!) {
+  findUserByNameOrEmail(input: $input) {
+    id
+    name
+    email
+    image
+    online
+  }
+}
+    `;
+
+/**
+ * __useFindUserByNameOrEmailQuery__
+ *
+ * To run a query within a React component, call `useFindUserByNameOrEmailQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFindUserByNameOrEmailQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFindUserByNameOrEmailQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useFindUserByNameOrEmailQuery(baseOptions: Apollo.QueryHookOptions<FindUserByNameOrEmailQuery, FindUserByNameOrEmailQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FindUserByNameOrEmailQuery, FindUserByNameOrEmailQueryVariables>(FindUserByNameOrEmailDocument, options);
+      }
+export function useFindUserByNameOrEmailLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FindUserByNameOrEmailQuery, FindUserByNameOrEmailQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FindUserByNameOrEmailQuery, FindUserByNameOrEmailQueryVariables>(FindUserByNameOrEmailDocument, options);
+        }
+export type FindUserByNameOrEmailQueryHookResult = ReturnType<typeof useFindUserByNameOrEmailQuery>;
+export type FindUserByNameOrEmailLazyQueryHookResult = ReturnType<typeof useFindUserByNameOrEmailLazyQuery>;
+export type FindUserByNameOrEmailQueryResult = Apollo.QueryResult<FindUserByNameOrEmailQuery, FindUserByNameOrEmailQueryVariables>;
 export const GetNearestUsersDocument = gql`
     query getNearestUsers {
   getNearestUsers {

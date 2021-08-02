@@ -4,6 +4,7 @@ export const initialState = {
     currentPositionUpdatedAt: null,
     recentContacts: [],
     errorMessage: null,
+    foundUsers: null,
     loading: false
 };
 
@@ -11,7 +12,7 @@ export const PeopleAroundReducer = (state: any, action: any) => {
     console.log('pinned dispatched', action);
 
     switch (action.type) {
-        case "SET_RECENT_CONTACTS": 
+        case "SET_RECENT_CONTACTS":
             return {
                 ...state,
                 recentContacts: action.payload
@@ -32,7 +33,11 @@ export const PeopleAroundReducer = (state: any, action: any) => {
                 peopleAround: action.payload,
                 loading: false
             };
-
+        case "SET_FOUND_NEW_USERS":
+            return {
+                ...state,
+                foundUsers: action.payload
+            }
         case "UPDATE_BY_ID":
             return {
                 ...state,

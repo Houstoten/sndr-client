@@ -29,6 +29,7 @@
     "framer-motion": "^4",
     "graphql": "^15.5.1",
     "http-proxy-middleware": "^2.0.1",
+    "jszip": "^3.7.0",
     "next": "11.0.1",
     "next-google-fonts": "^2.2.0",
     "next-http-proxy-middleware": "^1.0.10",
@@ -40,6 +41,7 @@
     "react-dropzone": "^11.3.4",
     "react-google-login": "^5.2.2",
     "subscriptions-transport-ws": "^0.9.19",
+    "use-debounced-effect-hook": "^1.1.62",
     "webrtc-adapter": "^8.0.0"
   },
   "devDependencies": {

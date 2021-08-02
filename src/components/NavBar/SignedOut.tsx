@@ -11,7 +11,7 @@ export const SignedOut: FC = () => {
     return (<Flex alignItems={'center'}>
         <Button
             w="180px"
-            h="40px"
+            h="42px"
             fontFamily="Noto Sans"
             fontSize="14px"
             fontWeight="700"

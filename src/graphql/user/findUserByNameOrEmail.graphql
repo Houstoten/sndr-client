@@ -1,0 +1,9 @@
+query findUserByNameOrEmail($input: NameEmailSearchArgs!){
+    findUserByNameOrEmail(input: $input){
+      id,
+      name,
+      email,
+      image,
+      online
+    }
+}
