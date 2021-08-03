@@ -3,7 +3,7 @@ import '../styles/globals.css'
 import 'webrtc-adapter'
 import type { AppProps } from 'next/app'
 import { NavBar } from "../components/NavBar/NavBar";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, Spinner } from "@chakra-ui/react";
 import React from 'react';
 import { GoogleAuthProvider } from '../context/AuthContext/AuthProvider';
 import { PeopleAroundProvider } from '../context/PeopleAroundContext/PeopleAroundProvider';
@@ -53,7 +53,8 @@ function MyApp({ Component, pageProps }: AppProps) {
               <SendToProvider>
                 <ChakraProvider theme={theme}>
                   <ToastWrapper>
-                    <NavBar SignedIn={router.pathname === '/hello' ? SignedOut : undefined} />
+                    <NavBar SignedIn={router.pathname === '/hello' ? SignedOut : undefined}
+                      SignedOut={router.pathname !== '/hello' ? Spinner : undefined} />
                     <Component {...pageProps} />
                     <Footer />
                   </ToastWrapper>

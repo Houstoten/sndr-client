@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { Spinner, Link } from "@chakra-ui/react"
-import { SignedOut } from "./SignedOut";
+import { SignedOut as DefaultSignedOut } from "./SignedOut";
 import { SignedIn as DefaultSignedIn } from "./SignedIn";
 import { useColorModeValue } from "@chakra-ui/color-mode";
 import { Box, Flex, HStack } from "@chakra-ui/layout";
@@ -10,7 +10,7 @@ import Image from 'next/image'
 
 export const NavBar: React.FC = (props: any) => {
 
-    const { SignedIn = DefaultSignedIn } = props
+    const { SignedIn = DefaultSignedIn, SignedOut = DefaultSignedOut } = props
     const { userDetails, loading, signedIn } = useAuthState()
 
     //@ts-ignore
