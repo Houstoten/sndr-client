@@ -35,9 +35,9 @@ client = new ApolloClient({
 });
 
 const peerOptions = {
-  host: 'peer-server-sndr.herokuapp.com',
-  port: 443,
-  secure: true
+  host: process.env.NEXT_PUBLIC_SIGNALING_URL,
+  port: process.env.NEXT_PUBLIC_SIGNALING_PORT,
+  secure: process.env.NEXT_PUBLIC_SIGNALING_SECURE === 'true'
 }
 
 function MyApp({ Component, pageProps }: AppProps) {

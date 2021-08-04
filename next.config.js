@@ -4,7 +4,7 @@ module.exports = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://api.sndr.club/graphql/:path*' // Proxy to Backend
+        destination: `${process.env.NEXT_PUBLIC_GRAPHQL_API_URL}/:path*` // Proxy to Backend
       }
     ]
   }

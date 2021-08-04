@@ -13,7 +13,7 @@ export const httpLink = createHttpLink({
 });
 
 export const wsLink = !isServer && new WebSocketLink({
-    uri: `wss://api.sndr.club`
+    uri: process.env.NEXT_PUBLIC_WS_API_URL
 });
 
 export const link = !isServer ? split(

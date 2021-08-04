@@ -1,16 +1,5 @@
 import * as R from 'rambda'
-
-export interface FileRequest {
-    id: string,
-    senderid: string,
-    sender?: any,
-    receiver?: any,
-    receiverid: string,
-    name: string,
-    size: number,
-    accepted: boolean,
-    updatedat?: Date
-}
+import { FileRequest } from '../../types';
 export interface PeerState {
     asSender: FileRequest[],
     asReceiver: (FileRequest & { pending: boolean, localAccepted: boolean })[]

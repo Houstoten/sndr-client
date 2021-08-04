@@ -5,7 +5,8 @@ import { PeerContext } from './PeerContext'
 import { useAuthState } from '../AuthContext/hooks/useAuthState';
 import { isServer } from '../../utils/isServer';
 import { saveAs } from 'file-saver';
-import { FileRequest, initialState, PeerReducer } from './reducer/reducer';
+import { initialState, PeerReducer } from './reducer/reducer';
+import { FileRequest } from '../types';
 import * as R from 'rambda'
 
 export const PeerProvider = ({ options, children }: any) => {

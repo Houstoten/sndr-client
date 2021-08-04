@@ -1,12 +1,4 @@
-import { FileRequest } from "../../PeerContext/reducer/reducer";
-
-export interface User {
-    id: string,
-    name: string,
-    email: string,
-    image: string,
-    online: boolean
-}
+import { FileRequest, User } from "../../types";
 
 export interface SendToReducerState {
     sendToUser: User | null,
