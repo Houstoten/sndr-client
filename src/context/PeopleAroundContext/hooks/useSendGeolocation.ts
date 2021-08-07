@@ -28,7 +28,7 @@ export const useSendGeolocation = () => {
         sendGeolocation({ variables })
     }
 
-    const requestGeolocation = () => navigator.geolocation.getCurrentPosition(onRequestSuccess)
+    const requestGeolocation = () => navigator.geolocation.getCurrentPosition(onRequestSuccess, () => alert('Allow geolocation to see online users nearby! Anyway, you can still find users through the search box below.'))
 
     return { updatedat: currentPositionUpdatedAt, sendGeolocation: requestGeolocation }
 }
